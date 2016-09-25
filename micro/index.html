@@ -140,11 +140,11 @@
       lastLng = coordinates[index][1];
     }
     var difference_lat =  map_lat_max - map_lat_min;
-    map_lat_min = map_lat_min - difference_lat * 0.1;
-    map_lat_max = map_lat_max + difference_lat * 0.1;
+    map_lat_min = map_lat_min - difference_lat * 0.2;
+    map_lat_max = map_lat_max + difference_lat * 0.2;
     var difference_lng =  map_lng_max - map_lng_min;
-    map_lng_min = map_lng_min - difference_lng * 0.1;
-    map_lng_max = map_lng_max + difference_lng * 0.1;
+    map_lng_min = map_lng_min - difference_lng * 0.2;
+    map_lng_max = map_lng_max + difference_lng * 0.2;
     var width_divise_difference_lat = width / difference_lat;
     var height_divise_difference_lng = height / difference_lng;
     // ----- -------------- -----
@@ -157,22 +157,20 @@
       var nextPointIndex = (indexCoordonnees+1)%(coordinates.length-1);
       var nextPoint = coordinates[nextPointIndex];
       var distanceNextPoint = getDistanceFromLatLonInM(lat, lng, nextPoint[0], nextPoint[1]);
-      var distanceRestante = distance - distanceNextPoint;
-      console.log(distanceRestante);
+      var distanceRestante = distance - distanceNextPoint; // Distance restante lorsque l'on a atteint le prochain point
       if(distanceRestante > 0){
         while(distanceRestante > 0){
-          console.log("x");
           nextPointIndex = (nextPointIndex+1)%(coordinates.length-1);
           nextPoint = coordinates[nextPointIndex]
           var distanceNextPoint = getDistanceFromLatLonInM(lat, lng, nextPoint[0], nextPoint[1]);
           distanceRestante = distanceRestante - distanceNextPoint;
-          console.log(distanceRestante)
         }
         var distanceFromPreviousPoint = distanceRestante + distanceNextPoint;
         var previousPointIndex = (nextPointIndex-1 + coordinates.length-1)%(coordinates.length-1);
         var previousPoint = coordinates[previousPointIndex];
-        var lat = previousPoint[0];
-        var lng = previousPoint[1];
+        var ratio = distance/distanceNextPoint;
+        var newLat = lat + (nextPoint[0] - lat) * ratio;
+        var newLng = lng + (nextPoint[1] - lng) * ratio;
         carSprite.x = (lat - map_lat_min) * width_divise_difference_lat;
         carSprite.y = (lng - map_lng_min) * height_divise_difference_lng;
         indexCoordonnees = previousPointIndex;
@@ -181,15 +179,17 @@
         var distanceFromPreviousPoint = distanceRestante + distanceNextPoint;
         var previousPointIndex = indexCoordonnees;
         var previousPoint = coordinates[previousPointIndex];
-        var lat = previousPoint[0];
-        var lng = previousPoint[1];
-        var latNext = nextPoint[0];
-        var lngNext = nextPoint[1];
-        var
-        carSprite.x = (lat - map_lat_min) * width_divise_difference_lat;
-        carSprite.y = (lng - map_lng_min) * height_divise_difference_lng;
+        var ratio = distance/distanceNextPoint;
+        var newLat = lat + (nextPoint[0] - lat) * ratio;
+        var newLng = lng + (nextPoint[1] - lng) * ratio;
+        var ancienX = carSprite.x;
+        var ancienY = carSprite.y;
+        carSprite.x = (newLat - map_lat_min) * width_divise_difference_lat;
+        carSprite.y = (newLng - map_lng_min) * height_divise_difference_lng;
+        var angle =  (carSprite.y - ancienY) / (carSprite.x - ancienX) ;
+        carSprite.rotation = Math.atan(angle) + (carSprite.x > ancienX ? 0 : 3.14);
         indexCoordonnees = previousPointIndex;
-        return { lat : lat, lng : lng, index : indexCoordonnees };
+        return { lat : newLat, lng : newLng, index : indexCoordonnees };
       }
 
     }
@@ -207,18 +207,19 @@
     stage.addChild(carSprite);
     var index = 0;
     var start = new Date();
-    var vitesse = distanceTotal / 100;
+    var vitesse = distanceTotal / 10;
     var lat = coordinates[0][0];
     var lng = coordinates[0][1]
     function animate() {
       requestAnimationFrame(animate);
       var actual = new Date();
-        result = nextCoordinates(carSprite, (actual-start)/1000, vitesse, lat, lng, index)
+      if(actual - start > 0.033){
+        result = nextCoordinates(carSprite, (actual-start)/1000, vitesse, lat, lng, index);
         lat = result.lat;
         lng = result.lng;
         index = result.index;
         start = actual;
-
+      }
       renderer.render(stage);
     }
     animate();
