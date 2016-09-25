@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Test Pixi.js</title>
+    <style>
+      div{
+        margin-right:10px;
+        margin-bottom:20px;
+      }
+      .div_50{
+        width : 49%;
+        float:left;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="div_50">
+      <div>
+        <label for="">Rotation</label><br/>
+        <input type="number" name="rotation" id="rotation" value="0">
+      </div>
+      <div>
+        <label for="">X</label><br/>
+        <input type="number" name="rotation" id="x" value="200">
+      </div>
+      <div>
+        <label for="">Y</label><br/>
+        <input type="number" name="rotation" id="y" value="150">
+      </div>
+
+
+
+    </div>
+    <div class="div_50" id="details">
+    </div>
+    <script src="files/pixi.min.js" charset="utf-8"></script>
+    <script type="text/javascript">
+    function getDistanceFromLatLonInM(lat1,lon1,lat2,lon2) {
+      var R = 6371000; // Radius of the earth in km
+      var dLat = deg2rad(lat2-lat1);  // deg2rad below
+      var dLon = deg2rad(lon2-lon1);
+      var a =
+        Math.sin(dLat/2) * Math.sin(dLat/2) +
+        Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(lat2)) *
+        Math.sin(dLon/2) * Math.sin(dLon/2)
+        ;
+      var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+      var d = R * c; // Distance in km
+      return Math.abs(d);
+    }
+
+    function deg2rad(deg) {
+      return deg * (Math.PI/180)
+    }
+    var width = 1200;
+    var height = 600;
+    var renderer = new PIXI.WebGLRenderer(width, height);
+    var latitudeEcrans = []
+    document.body.appendChild(renderer.view);
+    var stage = new PIXI.Container();
+    var carSprite = new PIXI.Sprite.fromImage('files/car-sprite.gif');
+    // ----- POUR LES TESTS -----
+    var coordinates = [
+                        [
+                            -4.3795348,
+                            48.4728076
+                        ],
+                        [
+                            -4.3794742,
+                            48.4727878
+                        ],
+                        [
+                            -4.3794825,
+                            48.4727746
+                        ],
+                        [
+                            -4.3794285,
+                            48.4727639
+                        ],
+                        [
+                            -4.3793741,
+                            48.4727218
+                        ],
+                        [
+                            -4.3793009,
+                            48.4727689
+                        ],
+                        [
+                            -4.3793355,
+                            48.4727965
+                        ],
+                        [
+                            -4.3793207,
+                            48.4728064
+                        ],
+                        [
+                            -4.3793835,
+                            48.4728599
+                        ],
+                        [
+                            -4.3794124,
+                            48.4728353
+                        ],
+                        [
+                            -4.3794503,
+                            48.4728452
+                        ],
+                        [
+                            -4.3794361,
+                            48.4728658
+                        ],
+                        [
+                            -4.3794913,
+                            48.4728784
+                        ],
+                        [
+                            -4.3795348,
+                            48.4728076
+                        ]
+                    ];
+    var map_lat_min = 100;
+    var map_lat_max = -100;
+    var map_lng_min = 100;
+    var map_lng_max = -100;
+    var lastLat = coordinates[0][0];
+    var lastLng = coordinates[0][1]
+    var distanceTotal = 0;
+    for(var index = 0; index < coordinates.length; index ++){
+      if(coordinates[index][0] < map_lat_min)
+        map_lat_min = coordinates[index][0];
+      if(coordinates[index][1] < map_lng_min)
+        map_lng_min = coordinates[index][1];
+      if(coordinates[index][0] > map_lat_max)
+        map_lat_max = coordinates[index][0];
+      if(coordinates[index][1] > map_lng_max)
+        map_lng_max = coordinates[index][1];
+      distanceTotal += getDistanceFromLatLonInM(lastLat, lastLng, coordinates[index][0], coordinates[index][1]);
+      lastLat = coordinates[index][0];
+      lastLng = coordinates[index][1];
+    }
+    var difference_lat =  map_lat_max - map_lat_min;
+    map_lat_min = map_lat_min - difference_lat * 0.1;
+    map_lat_max = map_lat_max + difference_lat * 0.1;
+    var difference_lng =  map_lng_max - map_lng_min;
+    map_lng_min = map_lng_min - difference_lng * 0.1;
+    map_lng_max = map_lng_max + difference_lng * 0.1;
+    var width_divise_difference_lat = width / difference_lat;
+    var height_divise_difference_lng = height / difference_lng;
+    // ----- -------------- -----
+    var nextCoordinates = function(carSprite, time_diff, speed, lat, lng, indexCoordonnees){
+      //time_diff : Différence de temps à afficher
+      //speed : vitesse du véhicule en m/s
+      //lat, lng : coordonnées actuelles de la voiture
+      //indexCoordonnees : index du point passée dans la tableau coordinates
+      var distance = time_diff * speed; //Distance sur laquelle la voiture doit se déplacer
+      var nextPointIndex = (indexCoordonnees+1)%(coordinates.length-1);
+      var nextPoint = coordinates[nextPointIndex];
+      var distanceNextPoint = getDistanceFromLatLonInM(lat, lng, nextPoint[0], nextPoint[1]);
+      var distanceRestante = distance - distanceNextPoint;
+      console.log(distanceRestante);
+      if(distanceRestante > 0){
+        while(distanceRestante > 0){
+          console.log("x");
+          nextPointIndex = (nextPointIndex+1)%(coordinates.length-1);
+          nextPoint = coordinates[nextPointIndex]
+          var distanceNextPoint = getDistanceFromLatLonInM(lat, lng, nextPoint[0], nextPoint[1]);
+          distanceRestante = distanceRestante - distanceNextPoint;
+          console.log(distanceRestante)
+        }
+        var distanceFromPreviousPoint = distanceRestante + distanceNextPoint;
+        var previousPointIndex = (nextPointIndex-1 + coordinates.length-1)%(coordinates.length-1);
+        var previousPoint = coordinates[previousPointIndex];
+        var lat = previousPoint[0];
+        var lng = previousPoint[1];
+        carSprite.x = (lat - map_lat_min) * width_divise_difference_lat;
+        carSprite.y = (lng - map_lng_min) * height_divise_difference_lng;
+        indexCoordonnees = previousPointIndex;
+        return { lat : lat, lng : lng, index : indexCoordonnees };
+      }else{
+        var distanceFromPreviousPoint = distanceRestante + distanceNextPoint;
+        var previousPointIndex = indexCoordonnees;
+        var previousPoint = coordinates[previousPointIndex];
+        var lat = previousPoint[0];
+        var lng = previousPoint[1];
+        var latNext = nextPoint[0];
+        var lngNext = nextPoint[1];
+        var
+        carSprite.x = (lat - map_lat_min) * width_divise_difference_lat;
+        carSprite.y = (lng - map_lng_min) * height_divise_difference_lng;
+        indexCoordonnees = previousPointIndex;
+        return { lat : lat, lng : lng, index : indexCoordonnees };
+      }
+
+    }
+    carSprite.scale.x = 0.5;
+    carSprite.scale.y = 0.5;
+    carSprite.x = (coordinates[0][0] - map_lat_min) * width / difference_lat;
+    carSprite.y = (coordinates[0][1] - map_lng_min) * height / difference_lng;
+    carSprite.anchor.set(0.5,0.5)
+    carSprite.interactive = true;
+    carSprite.buttonMode = true;
+    carSprite.defaultCursor = "pointer";
+    carSprite.on('mousedown', function(eventData){
+      details.innerHTML = "<p>Plus d'infos !!</p>"
+    });
+    stage.addChild(carSprite);
+    var index = 0;
+    var start = new Date();
+    var vitesse = distanceTotal / 100;
+    var lat = coordinates[0][0];
+    var lng = coordinates[0][1]
+    function animate() {
+      requestAnimationFrame(animate);
+      var actual = new Date();
+        result = nextCoordinates(carSprite, (actual-start)/1000, vitesse, lat, lng, index)
+        lat = result.lat;
+        lng = result.lng;
+        index = result.index;
+        start = actual;
+
+      renderer.render(stage);
+    }
+    animate();
+    var inputRotation = document.getElementById('rotation')
+    inputRotation.onchange = function(){
+      carSprite.rotation = inputRotation.value;
+    }
+    var inputX = document.getElementById('x')
+    inputX.onchange = function(){
+      carSprite.x = parseInt(inputX.value);
+    }
+    var inputY = document.getElementById('y')
+    inputY.onchange = function(){
+      carSprite.y = parseInt(inputY.value);
+    }
+    var details = document.getElementById('details');
+
+
+
+    </script>
+  </body>
+</html>

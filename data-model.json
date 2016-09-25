@@ -1,0 +1,172 @@
+{
+  users : [
+    {
+      id_user : 12564,
+      nom : "Tangi Mallegol",
+      mail : "tangi.mallegol@gmail.com",
+      password : "password_hash",
+      date_create : "24/09/2016",
+      last_connection : "24/09/2016",
+      role : "admin",
+      partage_map : [
+        {
+          id_map : 4562,
+          user_id_createur : 12565
+        }
+      ],
+      active : true
+    },
+    {
+      id_user : 12565,
+      nom : "Valentin Boucher",
+      mail : "boucherv@live.fr",
+      password : "password_hash",
+      date_create : "24/09/2016",
+      last_connection : "24/09/2016",
+      role : "admin",
+      partage_map : [
+
+      ],
+      active : true
+    }
+  ],
+  default_config : {
+    vehicules : {
+      voitures : {
+        taille : 1,
+        vitesse_max : 130,
+        acceleration : 6.5
+      },
+      camion : {
+        taille : 3,
+        vitesse_max : 100,
+        acceleration : 3.5
+      },
+      camionette : {
+        taille : 2,
+        vitesse_max : 130,
+        acceleration : 5
+      }
+    },
+    UR : {
+      routes : {
+        simple_unilateral : {
+          voie : 1,
+          vitesse_ville : 50,
+          vitesse : 70
+        },
+        double_unilateral : {
+          voie : 2,
+          vitesse_ville : 90,
+          vitesse : 110
+        },
+        triple_unilateral : {
+          voie : 3,
+          vitesse_ville : 90,
+          vitesse : 130
+        }
+      },
+      croisement : {
+        rond-point : {
+          voie : 2,
+          vitesse : 50
+        },
+        feu_tricolore : {
+
+        },
+        cedez_le_passage : {
+
+        },
+        stop : {
+
+        }
+      }
+    },
+    H : {
+
+    },
+    LDT : {
+
+    },
+    map : {
+
+    },
+    simulation : {
+
+    }
+  },
+  map : {
+    id_maps : 4562,
+    createur : 12565,
+    UR : [
+      {
+        id_UR : 456
+        //GeoJson
+      }
+    ],
+    H : [
+      {
+        //GeoJson
+        id_H : 45
+        nombre_voiture : 180,
+        vehicules : [
+          {
+            nom : "voiture",
+            LDT : [
+              {
+                id_LDT : 458,
+                trajets : [
+                  {
+                    heure_depart : "08:30",
+                    nb : 50
+                  },
+                  {
+                    heure_depart : "08:45",
+                    nb : 20
+                  }
+                ]
+              },
+              {
+                id_LDT : 457,
+                trajets : [
+                  {
+                    heure_depart : "08:30",
+                    nb : 50
+                  },
+                  {
+                    heure_depart : "08:45",
+                    nb : 20
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            nom : "camion",
+            LDT : [
+              {
+                id_LDT : 458,
+                trajets : [
+                  {
+                    heure_depart : "08:30",
+                    nb : 20
+                  },
+                  {
+                    heure_depart : "08:45",
+                    nb : 20
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    LDT : [
+      {
+        //GeoJson
+        id_LDT : 458
+      }
+    ]
+  }
+}
