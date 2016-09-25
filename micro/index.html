@@ -156,9 +156,10 @@
       var distance = time_diff * speed; //Distance sur laquelle la voiture doit se déplacer
       var nextPointIndex = (indexCoordonnees+1)%(coordinates.length-1);
       var nextPoint = coordinates[nextPointIndex];
-      var distanceNextPoint = getDistanceFromLatLonInM(lat, lng, nextPoint[0], nextPoint[1]);
+      var distanceNextPoint = getDistanceFromLatLonInM(lat, lng, nextPoint[0], nextPoint[1]); //Distance restante entre la position actuelle et le prochain point
       var distanceRestante = distance - distanceNextPoint; // Distance restante lorsque l'on a atteint le prochain point
       if(distanceRestante > 0){
+        //On itère sur tous les prochains points qu'on peut atteindre avec la distance à parcourir
         while(distanceRestante > 0){
           nextPointIndex = (nextPointIndex+1)%(coordinates.length-1);
           nextPoint = coordinates[nextPointIndex]
@@ -193,10 +194,13 @@
       }
 
     }
+    //Taille en x et y
     carSprite.scale.x = 0.5;
     carSprite.scale.y = 0.5;
+    //Position de départ
     carSprite.x = (coordinates[0][0] - map_lat_min) * width / difference_lat;
     carSprite.y = (coordinates[0][1] - map_lng_min) * height / difference_lng;
+    //Point normalisé sur lequel sur lequel se fera le pivot
     carSprite.anchor.set(0.5,0.5)
     carSprite.interactive = true;
     carSprite.buttonMode = true;
