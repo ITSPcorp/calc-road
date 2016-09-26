@@ -140,11 +140,11 @@
       lastLng = coordinates[index][1];
     }
     var difference_lat =  map_lat_max - map_lat_min;
-    map_lat_min = map_lat_min - difference_lat * 0.2;
-    map_lat_max = map_lat_max + difference_lat * 0.2;
+    map_lat_min = map_lat_min;// - difference_lat * 0.2;
+    map_lat_max = map_lat_max;// + difference_lat * 0.2;
     var difference_lng =  map_lng_max - map_lng_min;
-    map_lng_min = map_lng_min - difference_lng * 0.2;
-    map_lng_max = map_lng_max + difference_lng * 0.2;
+    map_lng_min = map_lng_min;// - difference_lng * 0.2;
+    map_lng_max = map_lng_max;// + difference_lng * 0.2;
     var width_divise_difference_lat = width / difference_lat;
     var height_divise_difference_lng = height / difference_lng;
     // ----- -------------- -----
